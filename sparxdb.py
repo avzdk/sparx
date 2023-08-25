@@ -21,7 +21,7 @@ class SparxDb:
          if type==None : 
              result=self.session.query(Object).all()   
          else:
-            result=self.session.query(Object).filter(Object.Object_Type=='Class').all()   
+            result=self.session.query(Object).filter(Object.Object_Type==type).all()   
          return result
     
     def commit(self):
