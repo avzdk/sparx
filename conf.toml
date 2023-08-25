@@ -1,0 +1,3 @@
+# Configuration
+
+connstr = "mysql+pymysql://user:password@sparxdb.server.com/database?charset=utf8mb4"
