@@ -1,1 +1,1 @@
-from .sparxdb import SparxDb, Object, Attribute
+from .sparxdb import SparxDb, Object, Attribute, ObjectTag

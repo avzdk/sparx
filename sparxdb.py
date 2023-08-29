@@ -96,6 +96,24 @@ class Object(Base):
     attributes = relationship("Attribute")
     tags = relationship("ObjectTag")
 
+    def get_tag(self,tagname):
+        #returns ObejctTag by name lookup
+        for tag in self.tags:
+            if tag.Property == tagname:
+                return tag
+                
+
+    def tag_update(self,tagname,value):
+        # Updates tag og add a new
+        tag=self.get_tag(tagname)
+        if tag == None:
+            tag=ObjectTag(tag=tagname,value=value)
+            self.tags.append(tag)
+        else:
+            tag.Value=value
+        return tag
+
+
     def __init__(self,Name,Object_Type,Package_ID):
         if Name is None or Object_Type is None or Package_ID is None :
             print("Mangler en parameter")
@@ -152,6 +170,11 @@ class ObjectTag(Base):
     Property = Column(String)
     Value = Column(String)
     Notes = Column(String)
+
+    def __init__(self,tag,value):
+        self.Property=tag
+        self.Value=value
+
 
     def __repr__(self):
         return f"{self.__tablename__} O:{self.Object_ID} {self.Property} : {self.Value}"
