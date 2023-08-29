@@ -104,7 +104,8 @@ class Object(Base):
                 
 
     def tag_update(self,tagname,value):
-        # Updates tag og add a new
+        # Updates tag or add a new
+        # Updates only first found
         tag=self.get_tag(tagname)
         if tag == None:
             tag=ObjectTag(tag=tagname,value=value)
