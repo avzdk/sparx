@@ -125,7 +125,7 @@ class Attribute(Base):
     UpperBound = Column(String)
     Container = Column(String,default='Not Specified')
     Notes = Column(String)
-    Derived = Column(String)
+    Derived = Column(String) # None,'0','1'
     Pos = Column(Integer)
     GenOption = Column(String)
     Length = Column(Integer)
