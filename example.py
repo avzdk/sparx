@@ -16,6 +16,12 @@ def exAddNew():
     newobj=Object(Name="My New Class", Object_Type="Class", Package_ID=2)
     sdb.add(newobj)
 
+def exQuery():
+    sdb=SparxDb(conf['connstr'])
+    stmt=sdb.select(Object).where(Object.Name=="Folder")
+    result=sdb.session.execute(stmt)
+    print(result.fetchone())
+
 
 if __name__ == '__main__':
     try:
@@ -23,5 +29,6 @@ if __name__ == '__main__':
     except FileNotFoundError:
         with open("conf.toml", "rb") as f: conf = tomli.load(f)
 
-    exRead()
-    exAddNew()
+    #exRead()
+    #exAddNew()
+    #exQuery()

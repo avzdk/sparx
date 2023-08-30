@@ -63,7 +63,7 @@ class Object(Base):
     PDATA2 = Column(String)
     PDATA3 = Column(String)
     PDATA4 = Column(String)
-    PDATA5 = Column(String)
+    PDATA5 = Column(String) # Keywords
     Concurrency = Column(String)
     Visibility = Column(String)
     Persistence = Column(String)
