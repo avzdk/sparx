@@ -156,10 +156,13 @@ class Attribute(Base):
     Classifier = Column(String,default=0)
     Default = Column(String)
     Type = Column(String)
-    ea_guid = Column(String,default='{'+str(uuid4())+'}')
+    ea_guid = Column(String)
     StyleEx = Column(String,default='volatile=0')
 
     tags = relationship("AttributeTag")
+
+    def __init__(self):
+        self.ea_guid='{'+str(uuid4())+'}'
 
     def __repr__(self):
         return f"{self.__tablename__} O:{self.Object_ID} {self.ID} : {self.Name}"
@@ -168,7 +171,7 @@ class ObjectTag(Base):
     __tablename__ = "t_objectproperties"
     PropertyID = Column(Integer,primary_key=True)  
     Object_ID = Column(Integer,ForeignKey(Object.Object_ID))
-    ea_guid = Column(String,default='{'+str(uuid4())+'}')
+    ea_guid = Column(String)
     Property = Column(String)
     Value = Column(String)
     Notes = Column(String)
@@ -176,6 +179,7 @@ class ObjectTag(Base):
     def __init__(self,tag,value):
         self.Property=tag
         self.Value=value
+        self.ea_guid='{'+str(uuid4())+'}'
 
 
     def __repr__(self):
@@ -185,17 +189,20 @@ class AttributeTag(Base):
     __tablename__ = "t_attributetag"
     PropertyID = Column(Integer,primary_key=True)  
     ElementID = Column(Integer,ForeignKey(Attribute.ID))
-    ea_guid = Column(String,default='{'+str(uuid4())+'}')
+    ea_guid = Column(String)
     Property = Column(String)
     Value = Column(String)
     Notes = Column(String)
+    
+    def __init__(self):
+        self.ea_guid='{'+str(uuid4())+'}'
 
     def __repr__(self):
         return f"{self.__tablename__} A:{self.ElementID} {self.Property} : {self.Value}"
 
 class Xref(Base):
     __tablename__ = "t_xref"
-    XrefID = Column(String,primary_key=True,default='{'+str(uuid4())+'}')
+    XrefID = Column(String,primary_key=True)
     Name = Column(String)
     Type = Column(String)
     Visibility = Column(String,default='Public')
@@ -208,6 +215,10 @@ class Xref(Base):
     Client = Column(String)
     Supplier = Column(String)
     Link = Column(String)
+
+    def __init__(self):
+        self.XrefID='{'+str(uuid4())+'}'
+
     def __repr__(self):
         return f"{self.__tablename__} C:{self.Client} Id:{self.XrefID}  "
 
