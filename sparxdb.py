@@ -95,6 +95,7 @@ class Object(Base):
 
     attributes = relationship("Attribute")
     tags = relationship("ObjectTag")
+    xrefs = relationship("Xref")
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
@@ -212,7 +213,7 @@ class Xref(Base):
     Behavior = Column(String)
     Partition = Column(String,default='0')
     Description = Column(String)
-    Client = Column(String)
+    Client = Column(String,ForeignKey(Object.ea_guid))
     Supplier = Column(String)
     Link = Column(String)
 
