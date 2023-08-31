@@ -77,7 +77,7 @@ class Object(Base):
     GenOption = Column(String)
     GenLinks = Column(String)
     Classifier = Column(Integer,default=0)
-    ea_guid = Column(String,default='{'+str(uuid4())+'}')
+    ea_guid = Column(String)
     ParentID = Column(Integer,default=0)
     RunState = Column(String)
     Classifier_guid = Column(String)
@@ -122,6 +122,7 @@ class Object(Base):
         self.Object_Type = Object_Type
         self.Package_ID = Package_ID
         self.CreatedDate = datetime.now()
+        self.ea_guid = '{'+str(uuid4())+'}'
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
@@ -192,6 +193,23 @@ class AttributeTag(Base):
     def __repr__(self):
         return f"{self.__tablename__} A:{self.ElementID} {self.Property} : {self.Value}"
 
+class Xref(Base):
+    __tablename__ = "t_xref"
+    XrefID = Column(String,primary_key=True,default='{'+str(uuid4())+'}')
+    Name = Column(String)
+    Type = Column(String)
+    Visibility = Column(String,default='Public')
+    Namespace = Column(String)
+    Requirement = Column(String)
+    Constraint = Column(String)
+    Behavior = Column(String)
+    Partition = Column(String,default='0')
+    Description = Column(String)
+    Client = Column(String)
+    Supplier = Column(String)
+    Link = Column(String)
+    def __repr__(self):
+        return f"{self.__tablename__} C:{self.Client} Id:{self.XrefID}  "
 
 if __name__ == '__main__':
     pass
