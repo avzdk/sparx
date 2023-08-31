@@ -27,8 +27,29 @@ class SparxDb:
     def commit(self):
         return self.session.commit()
     
+    def _createStdXref(self,element):
+        if element.Stereotype=="ArchiMate_ApplicationComponent":
+            newxref1=Xref()
+            newxref1.Name="CustomProperties"
+            newxref1.Type="element property"
+            newxref1.Description="@PROP=@NAME=_HideUmlLinks@ENDNAME;@TYPE=string@ENDTYPE;@VALU=True@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;@PROP=@NAME=_defaultDiagramType@ENDNAME;@TYPE=string@ENDTYPE;@VALU=ArchiMate3::Application@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;"
+            newxref1.Client=element.ea_guid
+            newxref1.Supplier="<none>"
+            self.session.add(newxref1)
+            newxref2=Xref()
+            newxref2.Name="Stereotypes"
+            newxref2.Type="element property"
+            newxref2.Description="@STEREO;Name=ArchiMate_ApplicationComponent;FQName=ArchiMate3::ArchiMate_ApplicationComponent;@ENDSTEREO;"
+            newxref2.Client=element.ea_guid
+            newxref2.Supplier="<none>"
+            self.session.add(newxref2)
+            print(newxref1)
+            print(newxref2)
+
     def add(self,element):
+        
         self.session.add(element)
+        self._createStdXref(element)
         return self.session.commit()
 
 
@@ -93,9 +114,9 @@ class Object(Base):
     ActionFlags = Column(String)
     EventFlags = Column(String)
 
-    attributes = relationship("Attribute")
-    tags = relationship("ObjectTag")
-    xrefs = relationship("Xref")
+    attributes = relationship("Attribute", cascade="all, delete")
+    tags = relationship("ObjectTag",cascade="all, delete")
+    xrefs = relationship("Xref",cascade="all, delete")
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
@@ -127,6 +148,7 @@ class Object(Base):
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
+    
     
 
 
@@ -160,7 +182,7 @@ class Attribute(Base):
     ea_guid = Column(String)
     StyleEx = Column(String,default='volatile=0')
 
-    tags = relationship("AttributeTag")
+    tags = relationship("AttributeTag", cascade="all, delete")
 
     def __init__(self):
         self.ea_guid='{'+str(uuid4())+'}'
