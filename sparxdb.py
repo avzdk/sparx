@@ -345,14 +345,18 @@ class DiagramObject(Base):
     Instance_ID = Column(Integer,primary_key=True) 
 
 @event.listens_for(Object.Name, 'set')
+@event.listens_for(Package.Name, 'set')
 def name_set(target, value, old_value, initiator):
     # Package names are stored two places and has to be in sync.
-    # This only takes care of t_object -> t_package
     session=target._sa_instance_state.session
-    stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))
-    result=session.execute(stmt)
-    folder=result.fetchone()[0]
-    folder.Name=target.Name
+    if value==old_value:   # 
+        if target.__tablename__ == 't_object':
+            stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))    
+        else :
+            stmt=select(Object).where(Object.PDATA1==int(target.Package_ID))    
+        result=session.execute(stmt)
+        folder=result.fetchone()[0]
+        folder.Name=target.Name
 
 
 

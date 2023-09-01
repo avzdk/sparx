@@ -1,4 +1,4 @@
-from sparxdb import SparxDb, Object, Attribute, Diagram
+from sparxdb import SparxDb, Object, Attribute, Diagram, Package
 import tomli
 
 
@@ -34,6 +34,16 @@ def exCreateDiagram():
     sdb.add(archioDiagram)
     #sdb.add(classDiagram)
 
+def exGetPackage():
+    sdb=SparxDb(conf['connstr'])
+    stmt=sdb.select(Package).where(Package.Name=="Folder2")
+    result=sdb.session.execute(stmt)
+    folder=result.fetchone()[0]
+    print(folder.Name)
+    folder.Name="Folder2"
+    sdb.commit()
+
+
 if __name__ == '__main__':
     try:
         with open("conf_dev.toml", "rb") as f: conf = tomli.load(f)
@@ -44,3 +54,4 @@ if __name__ == '__main__':
     #exAddNew()
     #exQuery()
     #exCreateDiagram()
+    exGetPackage()
