@@ -244,6 +244,53 @@ class Xref(Base):
 
     def __repr__(self):
         return f"{self.__tablename__} C:{self.Client} Id:{self.XrefID}  "
+    
+class Diagram(Base):
+    #Ex. archiDiagram=Diagram(name="My New Archimate Diagram",type="Logical",style="MDGDgm=ArchiMate3::Application;",Package_ID=3)
+    #Ex. classDiagram=Diagram(name="My New Classe Diagram",type="Logical",Package_ID=3)
+
+    __tablename__ = "t_diagram"
+    Diagram_ID = Column(Integer,primary_key=True)  
+    Package_ID = Column(Integer,default=1)  
+    ParentID = Column(Integer, default=0) 
+    Diagram_Type = Column(String)
+    Name = Column(String)
+    Version = Column(String, default='1.0')
+    Author	= Column(String)
+    ShowDetails = Column(Integer, default=0) 
+    Notes  = Column(String)
+    Stereotype = Column(String)
+    AttPub = Column(Integer, default=1) 
+    AttPri = Column(Integer, default=1) 
+    AttPro = Column(Integer, default=1) 
+    Orientation = Column(String, default='L')
+    cx = Column(Integer, default=1618) 
+    cy = Column(Integer, default=1134) 
+    Scale = Column(Integer, default=100) 
+    CreatedDate = Column(DateTime)
+    ModifiedDate= Column(DateTime)	
+    HTMLPath = Column(String)
+    ShowForeign = Column(Integer) 
+    ShowBorder = Column(Integer) 
+    ShowPackageContents = Column(Integer) 
+    PDATA = Column(String)
+    Locked = Column(Integer) 
+    ea_guid	= Column(String)
+    TPos = Column(Integer) 
+    Swimlanes = Column(String)
+    StyleEx = Column(String)
+
+    def __init__(self,Name,Diagram_Type,Package_ID,StyleEx=None):
+        self.Name =Name
+        self.CreatedDate = datetime.now()
+        self.Diagram_Type=Diagram_Type
+        self.Package_ID = Package_ID
+        self.ea_guid = '{'+str(uuid4())+'}'
+        self.StyleEx=StyleEx
+
 
 if __name__ == '__main__':
     pass
+
+
+

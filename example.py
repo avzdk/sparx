@@ -1,4 +1,4 @@
-from sparxdb import SparxDb, Object, Attribute
+from sparxdb import SparxDb, Object, Attribute, Diagram
 import tomli
 
 
@@ -22,6 +22,13 @@ def exQuery():
     result=sdb.session.execute(stmt)
     print(result.fetchone())
 
+def exCreateDiagram():
+    sdb=SparxDb(conf['connstr'])
+    print(conf['connstr'])
+    archioDiagram=Diagram(Name="My New Archi Diagram",Diagram_Type="Logical",StyleEx="MDGDgm=ArchiMate3::Application;",Package_ID=3)
+    classDiagram=Diagram(Name="My New Classe Diagram",Diagram_Type="Logical",Package_ID=3)
+    sdb.add(archioDiagram)
+    sdb.add(classDiagram)
 
 if __name__ == '__main__':
     try:
@@ -32,3 +39,4 @@ if __name__ == '__main__':
     #exRead()
     #exAddNew()
     #exQuery()
+    exCreateDiagram()
