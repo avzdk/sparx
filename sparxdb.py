@@ -1,6 +1,6 @@
 from uuid import uuid4
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, create_engine, select, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, create_engine, select, ForeignKey,event
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
 Base = declarative_base()
@@ -51,6 +51,47 @@ class SparxDb:
         self.session.add(element)
         self._createStdXref(element)
         return self.session.commit()
+    
+
+
+class Package(Base):
+    __tablename__ = "t_package"
+    Package_ID = Column(Integer,primary_key=True)
+    Name = Column(String)
+    Parent_ID = Column(Integer)
+    CreatedDate = Column(DateTime)
+    ModifiedDate = Column(DateTime)
+    Notes = Column(String)
+    ea_guid = Column(String)
+    XMLPath = Column(String)
+    IsControlled = Column(Integer)
+    LastLoadDate = Column(DateTime)
+    LastSaveDate = Column(DateTime)
+    Version = Column(String,default='1.0')
+    Protected = Column(Integer)
+    PkgOwner = Column(String)
+    UMLVersion = Column(String)
+    UseDTD = Column(Integer)
+    LogXML = Column(Integer,default=0)
+    CodePath = Column(String)
+    Namespace = Column(String)
+    TPos = Column(Integer)
+    PackageFlags  = Column(String)
+    BatchSave = Column(Integer,default=0)
+    BatchLoad = Column(Integer,default=0)
+
+    objects = relationship("Object", cascade="all, delete")
+    diagrams = relationship("Diagram", cascade="all, delete")
+
+    def __init__(self,Name="New",Parent_ID=0):
+        self.Name =Name
+        self.Parent_ID=Parent_ID
+        self.CreatedDate = datetime.now()
+        self.ea_guid = '{'+str(uuid4())+'}'
+
+    def __repr__(self):
+        return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
+    
 
 
 class Object(Base):
@@ -64,7 +105,7 @@ class Object(Base):
     Author = Column(String,default='python')     
     Version = Column(String,default='1.0')    
     Note = Column(String)       
-    Package_ID = Column(Integer)
+    Package_ID = Column(Integer,ForeignKey(Package.Package_ID))
     Stereotype = Column(String) 
     NType = Column(Integer,default=0)     
     Complexity = Column(String,default=1) 
@@ -80,7 +121,7 @@ class Object(Base):
     Status = Column(String,default="Proposed")
     Abstract = Column(String,default=0)
     Tagged = Column(Integer,default=0)
-    PDATA1 = Column(String)
+    PDATA1 = Column(String) # Package_ID
     PDATA2 = Column(String)
     PDATA3 = Column(String)
     PDATA4 = Column(String)
@@ -117,6 +158,8 @@ class Object(Base):
     attributes = relationship("Attribute", cascade="all, delete")
     tags = relationship("ObjectTag",cascade="all, delete")
     xrefs = relationship("Xref",cascade="all, delete")
+    diagramobjects = relationship("DiagramObject", cascade="all, delete")
+    #children = relationship("Object")
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
@@ -148,8 +191,6 @@ class Object(Base):
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
-    
-    
 
 
 class Attribute(Base):
@@ -251,7 +292,7 @@ class Diagram(Base):
 
     __tablename__ = "t_diagram"
     Diagram_ID = Column(Integer,primary_key=True)  
-    Package_ID = Column(Integer,default=1)  
+    Package_ID = Column(Integer,ForeignKey(Package.Package_ID),default=1, )  
     ParentID = Column(Integer, default=0) 
     Diagram_Type = Column(String)
     Name = Column(String)
@@ -280,6 +321,8 @@ class Diagram(Base):
     Swimlanes = Column(String)
     StyleEx = Column(String)
 
+    diagramobjects = relationship("DiagramObject", cascade="all, delete")
+
     def __init__(self,Name,Diagram_Type,Package_ID,StyleEx=None):
         self.Name =Name
         self.CreatedDate = datetime.now()
@@ -287,6 +330,31 @@ class Diagram(Base):
         self.Package_ID = Package_ID
         self.ea_guid = '{'+str(uuid4())+'}'
         self.StyleEx=StyleEx
+
+
+class DiagramObject(Base):
+    __tablename__ = "t_diagramobjects"
+    Diagram_ID = Column(Integer,ForeignKey(Diagram.Diagram_ID)) 
+    Object_ID = Column(Integer,ForeignKey(Object.Object_ID)) 
+    RectTop = Column(Integer) 
+    RectLeft = Column(Integer) 
+    RectRight = Column(Integer) 
+    RectBottom = Column(Integer) 
+    Sequence = Column(Integer) 
+    ObjectStyle = Column(String) 
+    Instance_ID = Column(Integer,primary_key=True) 
+
+@event.listens_for(Object.Name, 'set')
+def name_set(target, value, old_value, initiator):
+    # Package names are stored two places and has to be in sync.
+    # This only takes care of t_object -> t_package
+    session=target._sa_instance_state.session
+    stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))
+    result=session.execute(stmt)
+    folder=result.fetchone()[0]
+    folder.Name=target.Name
+
+
 
 
 if __name__ == '__main__':
