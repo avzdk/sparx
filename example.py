@@ -1,5 +1,5 @@
-from sparxdb import SparxDb, Object, Attribute, Diagram, Package
-import tomli
+from sparxdb import SparxDb, Object, Attribute, Diagram, Package, DiagramObject
+import tomllib
 
 
 def exRead():
@@ -32,6 +32,7 @@ def exCreateDiagram():
     archioDiagram=Diagram(Name="My New Archi Diagram",Diagram_Type="Logical",StyleEx="MDGDgm=ArchiMate3::Application;",Package_ID=2)
     classDiagram=Diagram(Name="My New Classe Diagram",Diagram_Type="Logical",Package_ID=2)
     sdb.add(archioDiagram)
+    diagramobjekt=DiagramObject()
     #sdb.add(classDiagram)
 
 def exGetPackage():
@@ -46,9 +47,9 @@ def exGetPackage():
 
 if __name__ == '__main__':
     try:
-        with open("conf_dev.toml", "rb") as f: conf = tomli.load(f)
+        with open("conf_dev.toml", "rb") as f: conf = tomllib.load(f)
     except FileNotFoundError:
-        with open("conf.toml", "rb") as f: conf = tomli.load(f)
+        with open("conf.toml", "rb") as f: conf = tomllib.load(f)
 
     #exRead()
     #exAddNew()

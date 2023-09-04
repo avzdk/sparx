@@ -336,13 +336,17 @@ class DiagramObject(Base):
     __tablename__ = "t_diagramobjects"
     Diagram_ID = Column(Integer,ForeignKey(Diagram.Diagram_ID)) 
     Object_ID = Column(Integer,ForeignKey(Object.Object_ID)) 
-    RectTop = Column(Integer) 
-    RectLeft = Column(Integer) 
-    RectRight = Column(Integer) 
-    RectBottom = Column(Integer) 
+    RectTop = Column(Integer,default=-100) 
+    RectLeft = Column(Integer,default=100) 
+    RectRight = Column(Integer,default=190) 
+    RectBottom = Column(Integer,default=-170) 
     Sequence = Column(Integer) 
     ObjectStyle = Column(String) 
     Instance_ID = Column(Integer,primary_key=True) 
+
+    def __init__(self,Diagram_ID,Object_ID):
+        pass
+
 
 @event.listens_for(Object.Name, 'set')
 @event.listens_for(Package.Name, 'set')
