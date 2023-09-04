@@ -43,6 +43,8 @@ def exGetPackage():
     print(folder.Name)
     folder.Name="Folder2"
     sdb.commit()
+    for object in folder.objects:
+        print(object)
 
 
 if __name__ == '__main__':

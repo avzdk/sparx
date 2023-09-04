@@ -90,7 +90,7 @@ class Package(Base):
         self.ea_guid = '{'+str(uuid4())+'}'
 
     def __repr__(self):
-        return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
+        return f"{self.__tablename__} {self.Package_ID}:\t{self.Name}"
     
 
 
@@ -163,10 +163,11 @@ class Object(Base):
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
+        # tag.Property tag.Value tag.Notes
         for tag in self.tags:
             if tag.Property == tagname:
                 return tag
-                
+            
 
     def tag_update(self,tagname,value):
         # Updates tag or add a new
@@ -228,6 +229,25 @@ class Attribute(Base):
     def __init__(self):
         self.ea_guid='{'+str(uuid4())+'}'
 
+    def get_tag(self,tagname):
+        #returns AttributeTag by name lookup
+        # tag.Property tag.Value tag.Notes
+        for tag in self.tags:
+            if tag.Property == tagname:
+                return tag
+            
+
+    def tag_update(self,tagname,value):
+        # Updates tag or add a new
+        # Updates only first found
+        tag=self.get_tag(tagname)
+        if tag == None:
+            tag=AttributeTag(tag=tagname,value=value)
+            self.tags.append(tag)
+        else:
+            tag.Value=value
+        return tag
+
     def __repr__(self):
         return f"{self.__tablename__} O:{self.Object_ID} {self.ID} : {self.Name}"
 
@@ -258,7 +278,9 @@ class AttributeTag(Base):
     Value = Column(String)
     Notes = Column(String)
     
-    def __init__(self):
+    def __init__(self,tag,value):
+        self.Property=tag
+        self.Value=value
         self.ea_guid='{'+str(uuid4())+'}'
 
     def __repr__(self):
@@ -353,7 +375,7 @@ class DiagramObject(Base):
 def name_set(target, value, old_value, initiator):
     # Package names are stored two places and has to be in sync.
     session=target._sa_instance_state.session
-    if value==old_value:   # 
+    if value!=old_value:   # 
         if target.__tablename__ == 't_object':
             stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))    
         else :
