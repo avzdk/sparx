@@ -17,6 +17,10 @@ class SparxDb:
     def select(self,obj):
         return select(obj)  
     
+    def getPackage(self,name):
+        package=self.session.query(Package).filter(Package.Name==name).first()
+        return package
+
     def getObjects(self,type=None):
          if type==None : 
              result=self.session.query(Object).all()   
@@ -27,6 +31,11 @@ class SparxDb:
     def commit(self):
         return self.session.commit()
     
+    def _createPckObject(self,element):
+        newobj=Object(Name=element.Name,Object_Type='Package',Package_ID=element.Parent_ID)
+        newobj.PDATA1=element.Package_ID
+        self.session.add(newobj)
+
     def _createStdXref(self,element):
         if element.Stereotype=="ArchiMate_ApplicationComponent":
             newxref1=Xref()
@@ -43,17 +52,16 @@ class SparxDb:
             newxref2.Client=element.ea_guid
             newxref2.Supplier="<none>"
             self.session.add(newxref2)
-            print(newxref1)
-            print(newxref2)
 
     def add(self,element):
         
         self.session.add(element)
-        self._createStdXref(element)
+        if element.__tablename__=='t_object':
+            self._createStdXref(element)
+        if element.__tablename__=='t_package':
+            self._createPckObject(element)
         return self.session.commit()
     
-
-
 class Package(Base):
     __tablename__ = "t_package"
     Package_ID = Column(Integer,primary_key=True)
@@ -83,17 +91,21 @@ class Package(Base):
     objects = relationship("Object", cascade="all, delete")
     diagrams = relationship("Diagram", cascade="all, delete")
 
-    def __init__(self,Name="New",Parent_ID=0):
+    def __init__(self,Name="New",Parent_ID=0,icon=3):
+        "icons: package=0, usecase=1,dynamic=2,class=3,component=4,deployment=5,simple=6"
         self.Name =Name
         self.Parent_ID=Parent_ID
+        if icon==0:  
+            self.PackageFlags='isModel=1;VPK=7;VPKG=7;'
+        else:
+            self.PackageFlags=f"isModel=1;VICON={icon};"
+
         self.CreatedDate = datetime.now()
         self.ea_guid = '{'+str(uuid4())+'}'
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Package_ID}:\t{self.Name}"
-    
-
-
+ 
 class Object(Base):
     # Object(Name="Igen ny", Object_Type="Class", Package_ID=2)
     __tablename__ = "t_object"
@@ -192,7 +204,6 @@ class Object(Base):
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
-
 
 class Attribute(Base):
     __tablename__ = "t_attribute"
@@ -353,7 +364,6 @@ class Diagram(Base):
         self.ea_guid = '{'+str(uuid4())+'}'
         self.StyleEx=StyleEx
 
-
 class DiagramObject(Base):
     __tablename__ = "t_diagramobjects"
     Diagram_ID = Column(Integer,ForeignKey(Diagram.Diagram_ID)) 
@@ -375,14 +385,20 @@ class DiagramObject(Base):
 def name_set(target, value, old_value, initiator):
     # Package names are stored two places and has to be in sync.
     session=target._sa_instance_state.session
-    if value!=old_value:   # 
-        if target.__tablename__ == 't_object':
+    stmt=''
+    if old_value.name!="NO_VALUE" and value!=old_value:   # not on create and only on actual valuechange
+        if target.__tablename__ == 't_object' and target.Object_Type == "Package":
             stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))    
-        else :
+            result=session.execute(stmt)
+            folder=result.fetchone()[0]
+            folder.Name=target.Name
+        elif target.__tablename__ == 't_package'  :
+            
             stmt=select(Object).where(Object.PDATA1==int(target.Package_ID))    
-        result=session.execute(stmt)
-        folder=result.fetchone()[0]
-        folder.Name=target.Name
+            result=session.execute(stmt)
+            folder=result.fetchone()[0]
+            folder.Name=target.Name
+
 
 
 

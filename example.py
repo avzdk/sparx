@@ -35,6 +35,11 @@ def exCreateDiagram():
     diagramobjekt=DiagramObject()
     #sdb.add(classDiagram)
 
+def exCreatePackage():
+    sdb=SparxDb(conf['connstr'])
+    package=Package(Name="Folder3",Parent_ID=1,icon=4)
+    sdb.add(package)
+
 def exGetPackage():
     sdb=SparxDb(conf['connstr'])
     stmt=sdb.select(Package).where(Package.Name=="Folder2")
@@ -45,6 +50,7 @@ def exGetPackage():
     sdb.commit()
     for object in folder.objects:
         print(object)
+    
 
 
 if __name__ == '__main__':
@@ -57,4 +63,5 @@ if __name__ == '__main__':
     #exAddNew()
     #exQuery()
     #exCreateDiagram()
-    exGetPackage()
+    exCreatePackage()
+    #exGetPackage()
