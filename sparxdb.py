@@ -404,6 +404,8 @@ class DiagramObject(Base):
     Instance_ID = Column(Integer,primary_key=True) 
 
     def setColor(self,r,g,b):
+        # 0 is pink (component) or deafult (class)
+        # -1 is default
         if r+g+b==0 : 
             color =-2
         else:
