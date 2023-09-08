@@ -299,7 +299,7 @@ class ObjectTag(Base):
 
     def __init__(self,tag,value):
         self.Property=tag
-        self.Value=value
+        self.Value=str(value)[:250]
         self.ea_guid='{'+str(uuid4())+'}'
 
 
@@ -427,7 +427,8 @@ def name_set(target, value, old_value, initiator):
     # Package names are stored two places and has to be in sync.
     session=target._sa_instance_state.session
     stmt=''
-    if old_value.name!="NO_VALUE" and value!=old_value:   # not on create and only on actual valuechange
+    if type(old_value)==str and value!=old_value or old_value.name!="NO_VALUE":
+    #if old_value.name!="NO_VALUE" and value!=old_value:   # not on create and only on actual valuechange
         if target.__tablename__ == 't_object' and target.Object_Type == "Package":
             stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))    
             result=session.execute(stmt)
