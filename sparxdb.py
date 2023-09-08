@@ -179,7 +179,18 @@ class Object(Base):
         for tag in self.tags:
             if tag.Property == tagname:
                 return tag
-            
+    
+    def set_child_diagram(self,diagram):
+        newXref=Xref()
+        newXref.Name='DefaultDiagram'
+        newXref.Type='element property'
+        newXref.Client=self.ea_guid
+        newXref.Supplier=diagram.ea_guid
+        session=diagram._sa_instance_state.session
+        self.NType=8
+        session.add(newXref)
+        session.commit()
+           
 
     def tag_update(self,tagname,value):
         # Updates tag or add a new
@@ -376,8 +387,11 @@ class DiagramObject(Base):
     ObjectStyle = Column(String) 
     Instance_ID = Column(Integer,primary_key=True) 
 
-    def __init__(self,Diagram_ID,Object_ID):
-        pass
+    def __init__(self,diagram,object):
+        self.Diagram_ID=diagram.Diagram_ID
+        self.Object_ID=object.Object_ID
+
+
 
 
 @event.listens_for(Object.Name, 'set')

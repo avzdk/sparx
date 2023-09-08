@@ -15,6 +15,7 @@ def exAddNew():
     sdb=SparxDb(conf['connstr'])
     newobj=Object(Name="My New Class", Object_Type="Class", Package_ID=2)
     sdb.add(newobj)
+    return newobj
 
 def exQuery():
     sdb=SparxDb(conf['connstr'])
@@ -25,20 +26,20 @@ def exQuery():
     #print(folder.children)
     folder.Name="Folder3"
     sdb.commit()
+    return folder
 
 def exCreateDiagram():
     sdb=SparxDb(conf['connstr'])
     print(conf['connstr'])
     archioDiagram=Diagram(Name="My New Archi Diagram",Diagram_Type="Logical",StyleEx="MDGDgm=ArchiMate3::Application;",Package_ID=2)
-    classDiagram=Diagram(Name="My New Classe Diagram",Diagram_Type="Logical",Package_ID=2)
     sdb.add(archioDiagram)
-    diagramobjekt=DiagramObject()
-    #sdb.add(classDiagram)
+    return archioDiagram
 
 def exCreatePackage():
     sdb=SparxDb(conf['connstr'])
     package=Package(Name="Folder3",Parent_ID=1,icon=4)
     sdb.add(package)
+    return package
 
 def exGetPackage():
     sdb=SparxDb(conf['connstr'])
@@ -50,7 +51,24 @@ def exGetPackage():
     sdb.commit()
     for object in folder.objects:
         print(object)
+    return folder
     
+
+def exComplex():
+    sdb=SparxDb(conf['connstr'])
+    package=Package(Name="TestFolder",Parent_ID=1,icon=4)
+    sdb.add(package)
+    diagram1=Diagram(Name="Diagram1",Diagram_Type="Logical",StyleEx="MDGDgm=ArchiMate3::Application;",Package_ID=package.Package_ID)
+    sdb.add(diagram1)
+    diagram2=Diagram(Name="Diagram2",Diagram_Type="Logical",StyleEx="MDGDgm=ArchiMate3::Application;",Package_ID=package.Package_ID)
+    sdb.add(diagram2)
+    newobj=Object(Name="System1", Object_Type="Component", Package_ID=package.Package_ID)
+    newobj.Stereotype="ArchiMate_ApplicationComponent"
+    sdb.add(newobj)
+    newobj.set_child_diagram(diagram2)
+    diagramobject=DiagramObject(diagram=diagram1,object=newobj)
+    sdb.add(diagramobject)
+
 
 
 if __name__ == '__main__':
@@ -63,5 +81,6 @@ if __name__ == '__main__':
     #exAddNew()
     #exQuery()
     #exCreateDiagram()
-    exCreatePackage()
+    #exCreatePackage()
     #exGetPackage()
+    exComplex()
