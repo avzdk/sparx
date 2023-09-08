@@ -1,1 +1,1 @@
-from .sparxdb import SparxDb, Object, Attribute, ObjectTag, Xref
+from .sparxdb import SparxDb, Object, Attribute, ObjectTag, Xref, Diagram, Package, DiagramObject
