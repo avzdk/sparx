@@ -5,6 +5,21 @@ from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
 Base = declarative_base()
 
+def txt2dict(txt):
+    dict={}
+    if txt:
+        pairs=txt.split(';')
+        for pair in pairs:
+            key, value = pair.split('=')
+            dict[key]=value
+    return dict
+
+def dict2txt(dict):
+    txt =''
+    for key, value in dict.items():
+        txt += f"{key}={value}"
+    return txt
+
 class SparxDb:
     #sdb=SparxDb("mysql+pymysql://user:password@sparxdb.server.com/database?charset=utf8mb4")
 
@@ -376,6 +391,7 @@ class Diagram(Base):
         self.StyleEx=StyleEx
 
 class DiagramObject(Base):
+    # TopLeft i 0,0
     __tablename__ = "t_diagramobjects"
     Diagram_ID = Column(Integer,ForeignKey(Diagram.Diagram_ID)) 
     Object_ID = Column(Integer,ForeignKey(Object.Object_ID)) 
@@ -386,6 +402,15 @@ class DiagramObject(Base):
     Sequence = Column(Integer) 
     ObjectStyle = Column(String) 
     Instance_ID = Column(Integer,primary_key=True) 
+
+    def setColor(self,r,g,b):
+        if r+g+b==0 : 
+            color =-2
+        else:
+            color = r+g*256+b*65536
+        dict=txt2dict( self.ObjectStyle)
+        dict['BCol']=str(color)
+        self.ObjectStyle=dict2txt(dict)
 
     def __init__(self,diagram,object):
         self.Diagram_ID=diagram.Diagram_ID

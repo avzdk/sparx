@@ -68,6 +68,8 @@ def exComplex():
     newobj.set_child_diagram(diagram2)
     diagramobject=DiagramObject(diagram=diagram1,object=newobj)
     sdb.add(diagramobject)
+    diagramobject.setColor(r=200,g=100,b=50)
+    sdb.commit()
 
 
 
