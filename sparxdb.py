@@ -217,6 +217,18 @@ class Object(Base):
         else:
             tag.Value=value
         return tag
+    
+    def setBackcolor(self,r,g,b):
+        # 0 is pink (component) or deafult (class)
+        # -1 is default
+        if r+g+b==0 : 
+            color =-2
+        else:
+            color = r+g*256+b*65536
+        dict=txt2dict( self.ObjectStyle)
+        dict['BCol']=str(color)
+        self.ObjectStyle=dict2txt(dict)
+        return color
 
 
     def __init__(self,Name,Object_Type,Package_ID):
