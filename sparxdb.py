@@ -427,7 +427,9 @@ def name_set(target, value, old_value, initiator):
     # Package names are stored two places and has to be in sync.
     session=target._sa_instance_state.session
     stmt=''
-    if type(old_value)==str and value!=old_value or old_value.name!="NO_VALUE":
+    # hvis nyt object så er old_value ikke en streng men har en attribut .name og så skal der ikke opdateres
+    if (type(old_value)==str and value!=old_value) or not hasattr(old_value,'name'):
+        
     #if old_value.name!="NO_VALUE" and value!=old_value:   # not on create and only on actual valuechange
         if target.__tablename__ == 't_object' and target.Object_Type == "Package":
             stmt=select(Package).where(Package.Package_ID==int(target.PDATA1))    
