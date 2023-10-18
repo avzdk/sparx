@@ -225,9 +225,7 @@ class Object(Base):
             color =-2
         else:
             color = r+g*256+b*65536
-        dict=txt2dict( self.ObjectStyle)
-        dict['BCol']=str(color)
-        self.ObjectStyle=dict2txt(dict)
+        self.Backcolor=color
         return color
 
 
