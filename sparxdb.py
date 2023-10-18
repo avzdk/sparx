@@ -43,6 +43,14 @@ class SparxDb:
             result=self.session.query(Object).filter(Object.Object_Type==type).all()   
          return result
     
+    def getConnectors(self,type=None):
+         # Named relationship in clint and connector in database
+         if type==None : 
+             result=self.session.query(Connector).all()   
+         else:
+            result=self.session.query(Connector).filter(Connector.Connector_Type==type).all()   
+         return result
+    
     def commit(self):
         return self.session.commit()
     
@@ -243,6 +251,113 @@ class Object(Base):
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
 
+class Connector(Base):
+    __tablename__ = "t_connector"
+    Connector_ID = Column(Integer,primary_key=True)
+    Name = Column(String)
+    Direction = Column(String)
+    Notes = Column(String)
+    Connector_Type = Column(String)
+    SubType = Column(String)
+    SourceCard = Column(String)
+    SourceAccess = Column(String)
+    SourceElement = Column(String)
+    DestCard = Column(String)
+    DestAccess = Column(String)
+    DestElement = Column(String)
+    SourceRole = Column(String)
+    SourceRoleType = Column(String)
+    SourceRoleNote = Column(String)
+    SourceContainment = Column(String)
+    SourceIsAggregate = Column(Integer)
+    SourceIsOrdered = Column(Integer)
+    SourceQualifier = Column(String)
+    DestRole = Column(String)
+    DestRoleType = Column(String)
+    DestRoleNote = Column(String)
+    DestContainment = Column(String)
+    DestIsAggregate = Column(Integer)
+    DestIsOrdered = Column(Integer)
+    DestQualifier = Column(String)
+    Start_Object_ID = Column(Integer,ForeignKey(Object.Object_ID))
+    End_Object_ID = Column(Integer, ForeignKey(Object.Object_ID))
+    Top_Start_Label = Column(String)
+    Top_Mid_Label = Column(String)
+    Top_End_Label = Column(String)
+    Btm_Start_Label = Column(String)
+    Btm_Mid_Label = Column(String)
+    Btm_End_Label = Column(String)
+    Start_Edge = Column(Integer)
+    End_Edge = Column(Integer)
+    PtStartX = Column(Integer)
+    PtStartY = Column(Integer)
+    PtEndX = Column(Integer)
+    PtEndY = Column(Integer)
+    SeqNo = Column(Integer)
+    HeadStyle = Column(Integer)
+    LineStyle = Column(Integer)
+    RouteStyle = Column(Integer)
+    IsBold = Column(Integer)
+    LineColor = Column(Integer)
+    Stereotype = Column(String)
+    VirtualInheritance = Column(String)
+    LinkAccess = Column(String)
+    PDATA1 = Column(String)
+    PDATA2 = Column(String)
+    PDATA3 = Column(String)
+    PDATA4 = Column(String)
+    PDATA5 = Column(String)
+    DiagramID = Column(Integer)
+    ea_guid = Column(String)
+    SourceConstraint = Column(String)
+    DestConstraint = Column(String)
+    SourceIsNavigable = Column(Integer)
+    DestIsNavigable = Column(Integer)
+    IsRoot = Column(Integer)
+    IsLeaf = Column(Integer)
+    IsSpec = Column(Integer)
+    SourceChangeable = Column(String)
+    DestChangeable = Column(String)
+    SourceTS = Column(String)
+    DestTS = Column(String)
+    StateFlags = Column(String)
+    ActionFlags = Column(String)
+    IsSignal = Column(Integer)
+    IsStimulus = Column(Integer)
+    DispatchAction = Column(String)
+    Target2 = Column(Integer)
+    StyleEx = Column(String)
+    SourceStereotype = Column(String)
+    DestStereotype = Column(String)
+    SourceStyle = Column(String)
+    DestStyle = Column(String)
+    EventFlags = Column(String)
+
+  
+
+    tags = relationship("ConnectorTag",cascade="all, delete")
+
+    def get_tag(self,tagname):
+        #returns ObejctTag by name lookup
+        # tag.Property tag.Value tag.Notes
+        for tag in self.tags:
+            if tag.Property == tagname:
+                return tag
+    
+    def tag_update(self,tagname,value):
+        # Updates tag or add a new
+        # Updates only first found
+        tag=self.get_tag(tagname)
+        if tag == None:
+            tag=ConnectorTag(tag=tagname,value=value)
+            self.tags.append(tag)
+        else:
+            tag.Value=value
+        return tag
+
+    def __repr__(self):
+        return f"{self.__tablename__} {self.Connector_ID}:\t{self.Connector_Type}: {self.Name}"
+  
 class Attribute(Base):
     __tablename__ = "t_attribute"
     ID = Column(Integer,primary_key=True)  
@@ -317,6 +432,23 @@ class ObjectTag(Base):
 
     def __repr__(self):
         return f"{self.__tablename__} O:{self.Object_ID} {self.Property} : {self.Value}"
+    
+class ConnectorTag(Base):
+    __tablename__ = "t_connectortag"
+    PropertyID = Column(Integer,primary_key=True)  
+    ElementID = Column(Integer,ForeignKey(Connector.Connector_ID))
+    ea_guid = Column(String)
+    Property = Column(String)
+    Value = Column(String)
+    Notes = Column(String)
+
+    def __init__(self,tag,value):
+        self.Property=tag
+        self.Value=str(value)[:250]
+        self.ea_guid='{'+str(uuid4())+'}'
+
+    def __repr__(self):
+        return f"{self.__tablename__} O:{self.ElementID} {self.Property} : {self.Value}"
 
 class AttributeTag(Base):
     __tablename__ = "t_attributetag"
@@ -430,89 +562,7 @@ class DiagramObject(Base):
         self.Diagram_ID=diagram.Diagram_ID
         self.Object_ID=object.Object_ID
 
-class Connector(Base):
-    __tablename__ = "t_connector"
-    Connector_ID = Column(Integer,primary_key=True)
-    Name = Column(String)
-    Direction = Column(String)
-    Notes = Column(String)
-    Connector_Type = Column(String)
-    SubType = Column(String)
-    SourceCard = Column(String)
-    SourceAccess = Column(String)
-    SourceElement = Column(String)
-    DestCard = Column(String)
-    DestAccess = Column(String)
-    DestElement = Column(String)
-    SourceRole = Column(String)
-    SourceRoleType = Column(String)
-    SourceRoleNote = Column(String)
-    SourceContainment = Column(String)
-    SourceIsAggregate = Column(Integer)
-    SourceIsOrdered = Column(Integer)
-    SourceQualifier = Column(String)
-    DestRole = Column(String)
-    DestRoleType = Column(String)
-    DestRoleNote = Column(String)
-    DestContainment = Column(String)
-    DestIsAggregate = Column(Integer)
-    DestIsOrdered = Column(Integer)
-    DestQualifier = Column(String)
-    Start_Object_ID = Column(Integer,ForeignKey(Object.Object_ID))
-    End_Object_ID = Column(Integer, ForeignKey(Object.Object_ID))
-    Top_Start_Label = Column(String)
-    Top_Mid_Label = Column(String)
-    Top_End_Label = Column(String)
-    Btm_Start_Label = Column(String)
-    Btm_Mid_Label = Column(String)
-    Btm_End_Label = Column(String)
-    Start_Edge = Column(Integer)
-    End_Edge = Column(Integer)
-    PtStartX = Column(Integer)
-    PtStartY = Column(Integer)
-    PtEndX = Column(Integer)
-    PtEndY = Column(Integer)
-    SeqNo = Column(Integer)
-    HeadStyle = Column(Integer)
-    LineStyle = Column(Integer)
-    RouteStyle = Column(Integer)
-    IsBold = Column(Integer)
-    LineColor = Column(Integer)
-    Stereotype = Column(String)
-    VirtualInheritance = Column(String)
-    LinkAccess = Column(String)
-    PDATA1 = Column(String)
-    PDATA2 = Column(String)
-    PDATA3 = Column(String)
-    PDATA4 = Column(String)
-    PDATA5 = Column(String)
-    DiagramID = Column(Integer)
-    ea_guid = Column(String)
-    SourceConstraint = Column(String)
-    DestConstraint = Column(String)
-    SourceIsNavigable = Column(Integer)
-    DestIsNavigable = Column(Integer)
-    IsRoot = Column(Integer)
-    IsLeaf = Column(Integer)
-    IsSpec = Column(Integer)
-    SourceChangeable = Column(String)
-    DestChangeable = Column(String)
-    SourceTS = Column(String)
-    DestTS = Column(String)
-    StateFlags = Column(String)
-    ActionFlags = Column(String)
-    IsSignal = Column(Integer)
-    IsStimulus = Column(Integer)
-    DispatchAction = Column(String)
-    Target2 = Column(Integer)
-    StyleEx = Column(String)
-    SourceStereotype = Column(String)
-    DestStereotype = Column(String)
-    SourceStyle = Column(String)
-    DestStyle = Column(String)
-    EventFlags = Column(String)
 
-    
 
 
 

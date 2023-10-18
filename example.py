@@ -71,7 +71,13 @@ def exComplex():
     diagramobject.setColor(r=200,g=100,b=50)
     sdb.commit()
 
-
+def exGetConnectors():
+    sdb=SparxDb(conf['connstr'])
+    connectors=sdb.getConnectors(type="Association")
+    for connector in connectors:
+        #print(f"{connector.Name} {connector.Supplier.Name} {connector.Client.Name}")
+        print(f"{connector.Name} ")
+    return connectors
 
 if __name__ == '__main__':
     try:
@@ -85,4 +91,5 @@ if __name__ == '__main__':
     #exCreateDiagram()
     #exCreatePackage()
     #exGetPackage()
-    exComplex()
+    #exComplex()
+    exGetConnectors()
