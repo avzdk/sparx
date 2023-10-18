@@ -252,6 +252,8 @@ class Object(Base):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
 
 class Connector(Base):
+    # only tags in t_connectortags is hendled
+    # todo : handle tags in t_taggedvalue
     __tablename__ = "t_connector"
     Connector_ID = Column(Integer,primary_key=True)
     Name = Column(String)

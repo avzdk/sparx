@@ -75,8 +75,15 @@ def exGetConnectors():
     sdb=SparxDb(conf['connstr'])
     connectors=sdb.getConnectors(type="Association")
     for connector in connectors:
-        #print(f"{connector.Name} {connector.Supplier.Name} {connector.Client.Name}")
         print(f"{connector.Name} ")
+    return connectors
+
+def exSetConnectorTag():
+    sdb=SparxDb(conf['connstr'])
+    connectors=sdb.getConnectors(type="Association")
+    for connector in connectors:
+        connector.tag_update(tagname="MyTag",value="MyValue")
+    sdb.commit()
     return connectors
 
 if __name__ == '__main__':
@@ -92,4 +99,5 @@ if __name__ == '__main__':
     #exCreatePackage()
     #exGetPackage()
     #exComplex()
-    exGetConnectors()
+    #exGetConnectors()
+    exSetConnectorTag()
