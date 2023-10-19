@@ -86,6 +86,13 @@ def exSetConnectorTag():
     sdb.commit()
     return connectors
 
+def exGetChildren():
+    sdb=SparxDb(conf['connstr'])
+    object=sdb.getObject(name="KompA") 
+    children=object.getChildren()
+    for child in children:
+        print(child.Name)
+
 if __name__ == '__main__':
     try:
         with open("conf_dev.toml", "rb") as f: conf = tomllib.load(f)
@@ -100,4 +107,5 @@ if __name__ == '__main__':
     #exGetPackage()
     #exComplex()
     #exGetConnectors()
-    exSetConnectorTag()
+    #exSetConnectorTag()
+    exGetChildren()
