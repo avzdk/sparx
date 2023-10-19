@@ -75,6 +75,21 @@ class SparxDb:
             newxref2.Client=element.ea_guid
             newxref2.Supplier="<none>"
             self.session.add(newxref2)
+        elif element.Stereotype=="ArchiMate_SystemSoftware":
+            newxref1=Xref()
+            newxref1.Name="CustomProperties"
+            newxref1.Type="element property"
+            newxref1.Description="@PROP=@NAME=_HideUmlLinks@ENDNAME;@TYPE=string@ENDTYPE;@VALU=True@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;@PROP=@NAME=_defaultDiagramType@ENDNAME;@TYPE=string@ENDTYPE;@VALU=ArchiMate3::Technology@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;"
+            newxref1.Client=element.ea_guid
+            newxref1.Supplier="<none>"
+            self.session.add(newxref1)
+            newxref2=Xref()
+            newxref2.Name="Stereotypes"
+            newxref2.Type="element property"
+            newxref2.Description="@STEREO;Name=ArchiMate_SystemSoftware;FQName=ArchiMate3::ArchiMate_SystemSoftware;@ENDSTEREO;"
+            newxref2.Client=element.ea_guid
+            newxref2.Supplier="<none>"
+            self.session.add(newxref2)
 
     def add(self,element):
         
@@ -82,6 +97,7 @@ class SparxDb:
         if element.__tablename__=='t_object':
             self._createStdXref(element)
         if element.__tablename__=='t_package':
+            self.commit()   # to get Package_ID
             self._createPckObject(element)
         return self.session.commit()
     

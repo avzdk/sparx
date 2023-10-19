@@ -39,6 +39,7 @@ def exCreatePackage():
     sdb=SparxDb(conf['connstr'])
     package=Package(Name="Folder3",Parent_ID=1,icon=4)
     sdb.add(package)
+    sdb.commit()
     return package
 
 def exGetPackage():
@@ -96,8 +97,8 @@ if __name__ == '__main__':
     #exAddNew()
     #exQuery()
     #exCreateDiagram()
-    #exCreatePackage()
+    exCreatePackage()
     #exGetPackage()
     #exComplex()
     #exGetConnectors()
-    exSetConnectorTag()
+    #exSetConnectorTag()
