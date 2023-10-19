@@ -35,6 +35,10 @@ class SparxDb:
     def getPackage(self,name):
         package=self.session.query(Package).filter(Package.Name==name).first()
         return package
+    
+    def getObject(self,name):
+        object=self.session.query(Object).filter(Object.Name==name).first()
+        return object
 
     def getObjects(self,type=None):
          if type==None : 
@@ -261,6 +265,11 @@ class Object(Base):
         self.Package_ID = Package_ID
         self.CreatedDate = datetime.now()
         self.ea_guid = '{'+str(uuid4())+'}'
+
+    def getChildren(self):
+        session=self._sa_instance_state.session
+        children = session.query(Object).filter(Object.ParentID==self.Object_ID).all()
+        return children
 
     def __repr__(self):
         return f"{self.__tablename__} {self.Object_ID}:\t{self.Object_Type}: {self.Name}"
