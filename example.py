@@ -94,6 +94,12 @@ def exGetChildren():
     for child in children:
         print(child.Name)
 
+def exGetRoot():
+    sdb=SparxDb(conf['connstr'])
+    object=sdb.getObject(name="KompB") 
+    root=object.getRootPackage()
+    print(root.Name)
+
 if __name__ == '__main__':
     try:
         with open("conf_dev.toml", "rb") as f: conf = tomllib.load(f)
@@ -104,9 +110,10 @@ if __name__ == '__main__':
     #exAddNew()
     #exQuery()
     #exCreateDiagram()
-    exCreatePackage()
+    #exCreatePackage()
     #exGetPackage()
     #exComplex()
     #exGetConnectors()
     #exSetConnectorTag()
-    exGetChildren()
+    #exGetChildren()
+    exGetRoot()

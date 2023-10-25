@@ -134,6 +134,15 @@ class Package(Base):
     objects = relationship("Object", cascade="all, delete")
     diagrams = relationship("Diagram", cascade="all, delete")
 
+    def getRootPackage(self):
+        '''Finds root package of package'''
+        session=self._sa_instance_state.session
+        parent = session.query(Package).filter(Package.Package_ID==self.Parent_ID).first()
+        while parent.Parent_ID!=0:
+            parent = session.query(Package).filter(Package.Package_ID==parent.Parent_ID).first()
+        return parent
+    
+        
     def __init__(self,Name="New",Parent_ID=0,icon=3):
         "icons: package=0, usecase=1,dynamic=2,class=3,component=4,deployment=5,simple=6"
         self.Name =Name
@@ -256,6 +265,16 @@ class Object(Base):
         self.Backcolor=color
         return color
 
+    def getPackage(self):
+        '''Finds package of object'''
+        session=self._sa_instance_state.session
+        package=session.query(Package).filter(Package.Package_ID==self.Package_ID).first()
+        return package
+    
+    def getRootPackage(self):
+        '''Finds root package of object'''
+        package=self.getPackage()
+        return package.getRootPackage()
 
     def __init__(self,Name,Object_Type,Package_ID):
         if Name is None or Object_Type is None or Package_ID is None :
