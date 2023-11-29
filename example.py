@@ -106,6 +106,7 @@ if __name__ == '__main__':
     except FileNotFoundError:
         with open("conf.toml", "rb") as f: conf = tomllib.load(f)
 
+    print(f"Connecting to {conf['connstr']}")
     #exRead()
     #exAddNew()
     #exQuery()
@@ -116,4 +117,4 @@ if __name__ == '__main__':
     #exGetConnectors()
     #exSetConnectorTag()
     #exGetChildren()
-    exGetRoot()
+    #exGetRoot()
