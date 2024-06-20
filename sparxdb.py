@@ -142,6 +142,16 @@ class Package(Base):
             parent = session.query(Package).filter(Package.Package_ID==parent.Parent_ID).first()
         return parent
     
+    def get_packageobject(self):
+        '''Finds object of package'''
+        session=self._sa_instance_state.session
+        object = session.query(Object).filter(Object.PDATA1==self.Package_ID).first()
+        return object
+
+    def get_tag(self,tagname):
+        packageobject=self.get_packageobject()
+        tag=packageobject.get_tag(tagname)
+        return tag
         
     def __init__(self,Name="New",Parent_ID=0,icon=3):
         "icons: package=0, usecase=1,dynamic=2,class=3,component=4,deployment=5,simple=6"
