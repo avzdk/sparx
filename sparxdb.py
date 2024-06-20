@@ -223,7 +223,15 @@ class Object(Base):
     tags = relationship("ObjectTag",cascade="all, delete")
     xrefs = relationship("Xref",cascade="all, delete")
     diagramobjects = relationship("DiagramObject", cascade="all, delete")
+    
     #children = relationship("Object")
+
+    def get_connectors(self):
+        session=self._sa_instance_state.session
+        connectors_start=session.query(Connector).filter(Connector.Start_Object_ID==self.Object_ID)
+        connectors_end=session.query(Connector).filter(Connector.End_Object_ID==self.Object_ID)
+        return connectors_end.all()+connectors_start.all()
+
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
@@ -443,7 +451,27 @@ class Attribute(Base):
         for tag in self.tags:
             if tag.Property == tagname:
                 return tag
-            
+    def get_object (self):
+        session=self._sa_instance_state.session
+        object=session.query(Object).filter(Object.Object_ID==self.Object_ID).first()
+        return object
+    
+    def get_connectors(self):
+        # finder parent klassens og løber alle connectors igennem
+        #hvis den hører til attributten så er den med
+        connectors=[]
+        for connector in self.get_object().get_connectors():
+            if connector.StyleEx:
+                lfspplace=connector.StyleEx.find("LFSP")
+                if lfspplace != -1:
+                    attuuid=connector.StyleEx[lfspplace+5:lfspplace+5+38]
+                    if attuuid==self.ea_guid:
+                        connectors.append(connector)
+        return connectors
+                    
+
+        
+
 
     def tag_update(self,tagname,value):
         # Updates tag or add a new
