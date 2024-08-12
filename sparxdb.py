@@ -399,6 +399,12 @@ class Connector(Base):
 
     tags = relationship("ConnectorTag",cascade="all, delete")
 
+    def get_objects (self):
+        session=self._sa_instance_state.session
+        start_object=session.query(Object).filter(Object.Object_ID==self.Start_Object_ID).first()
+        end_object=session.query(Object).filter(Object.Object_ID==self.End_Object_ID).first()
+        return start_object, end_object
+
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
         # tag.Property tag.Value tag.Notes
