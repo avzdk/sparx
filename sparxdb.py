@@ -634,6 +634,7 @@ class DiagramObject(Base):
     Sequence = Column(Integer) 
     ObjectStyle = Column(String) 
     Instance_ID = Column(Integer,primary_key=True) 
+    diagram = relationship("Diagram")
 
     def setColor(self,r,g,b):
         # 0 is pink (component) or deafult (class)
