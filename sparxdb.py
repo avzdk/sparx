@@ -283,6 +283,14 @@ class Object(Base):
         self.Backcolor=color
         return color
 
+    def getObjectPackage(self):
+        #findet pakkerepræsentationen af objektet hvis objektet er en pakke.
+        if self.Object_Type=="Package":
+            session=self._sa_instance_state.session
+            package=session.query(Package).filter(self.PDATA1==Package.Package_ID).first()
+            return package
+        else: return None
+
     def getPackage(self):
         '''Finds package of object'''
         session=self._sa_instance_state.session
@@ -612,7 +620,7 @@ class Diagram(Base):
     Swimlanes = Column(String)
     StyleEx = Column(String)
 
-    diagramobjects = relationship("DiagramObject", cascade="all, delete")
+    diagramobjects = relationship("DiagramObject", backref="Diagram", cascade="all, delete")
 
     def __init__(self,Name,Diagram_Type,Package_ID,StyleEx=None):
         self.Name =Name
@@ -634,7 +642,7 @@ class DiagramObject(Base):
     Sequence = Column(Integer) 
     ObjectStyle = Column(String) 
     Instance_ID = Column(Integer,primary_key=True) 
-    diagram = relationship("Diagram")
+    
 
     def setColor(self,r,g,b):
         # 0 is pink (component) or deafult (class)
