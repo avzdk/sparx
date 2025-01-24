@@ -242,6 +242,11 @@ class Object(Base):
         connectors_end=session.query(Connector).filter(Connector.End_Object_ID==self.Object_ID)
         return connectors_end.all()+connectors_start.all()
 
+    def get_connectorsTarget(self):
+        #Relationer hor objektet er target
+        session=self._sa_instance_state.session        
+        connectors_end=session.query(Connector).filter(Connector.End_Object_ID==self.Object_ID)
+        return connectors_end.all()
 
     def get_tag(self,tagname):
         #returns ObejctTag by name lookup
